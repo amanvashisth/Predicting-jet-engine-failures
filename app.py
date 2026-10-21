@@ -218,14 +218,40 @@ def load_model(path):
 st.title("✈️ Jet Engine Remaining Useful Life Prediction")
 
 st.write(
-    "Upload recent sensor readings for one engine. "
-    "The trained pipeline will process the data and estimate "
-    "the remaining useful life (RUL) for its latest cycle."
+    "Upload sensor history to calculate 15-cycle rolling features and predict remaining useful life for the latest cycle of each engine."
 )
 
 st.info(
-    "Upload a CSV with column headers: unit, cycle, set1, "
-    "set2, set3, and sensors s1 through s21."
+    "Include at least 15 consecutive cycles for every engine. " 
+    "For a new cycle, include its previous 14 cycles as well; this app does not retain history between uploads."
+)
+
+# =========================================================
+# CSV TEMPLATE DOWNLOAD
+# =========================================================
+
+FEATURE_COLUMNS = (
+    ["unit", "cycle", "set1", "set2", "set3"]
+    + [f"s{i}" for i in range(1, 22)]
+)
+
+# Create a blank template with 20 rows
+template = pd.DataFrame(columns=FEATURE_COLUMNS)
+
+template_csv = template.to_csv(index=False).encode("utf-8")
+
+st.subheader("Download CSV Template")
+
+st.write(
+    "Download the template, enter 20 readings for one engine, "
+    "and upload the completed CSV below."
+)
+
+st.download_button(
+    label="Download CSV Template",
+    data=template_csv,
+    file_name="engine_sensor_template.csv",
+    mime="text/csv"
 )
 
 
@@ -235,11 +261,11 @@ st.info(
 
 try:
     rul_pipeline = load_model(MODEL_PATH)
-    st.success("Trained pipeline loaded successfully.")
+    st.success("Jet Engine RUL Prediction Model is Ready for use!")
 
 except Exception as exc:
     st.error(
-        "Could not load the trained pipeline. Confirm that "
+        "Could not load the Jet Engine RUL Prediction Model. Confirm that "
         "model/rul_prediction_pipeline.pkl exists and that "
         "the saved transformer classes match this app."
     )
