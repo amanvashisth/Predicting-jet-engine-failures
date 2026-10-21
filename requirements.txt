@@ -1,4 +1,6 @@
-lightgbm>=4.0
-numpy>=1.24
-pandas>=2.0
-streamlit>=1.30
+streamlit
+scikit-learn
+pandas
+numpy
+lightgbm
+
